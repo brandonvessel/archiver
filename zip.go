@@ -182,7 +182,7 @@ func (z Zip) archiveOneFile(ctx context.Context, zw *zip.Writer, idx int, file F
 // the interface because we figure you can Read() from anything you can ReadAt() or Seek()
 // with. Due to the nature of the zip archive format, if sourceArchive is not an io.Seeker
 // and io.ReaderAt, an error is returned.
-func (z Zip) Extract(ctx context.Context, sourceArchive io.Reader, pathsInArchive []string, handleFile FileHandler) error {
+func (z Zip) Extract(ctx context.Context, sourceArchive io.Reader, maxFiles int, handleFile FileHandler) error {
 	sra, ok := sourceArchive.(seekReaderAt)
 	if !ok {
 		return fmt.Errorf("input type must be an io.ReaderAt and io.Seeker because of zip format constraints")
@@ -206,12 +206,14 @@ func (z Zip) Extract(ctx context.Context, sourceArchive io.Reader, pathsInArchiv
 			return err // honor context cancellation
 		}
 
+		// check if over maxFiles
+		if i >= maxFiles {
+			return nil
+		}
+
 		// ensure filename and comment are UTF-8 encoded (issue #147 and PR #305)
 		z.decodeText(&f.FileHeader)
 
-		if !fileIsIncluded(pathsInArchive, f.Name) {
-			continue
-		}
 		if fileIsIncluded(skipDirs, f.Name) {
 			continue
 		}

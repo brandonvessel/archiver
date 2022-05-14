@@ -1,14 +1,7 @@
 package archiver
 
 import (
-	"bytes"
 	_ "embed"
-	"fmt"
-	"io"
-	"io/fs"
-	"log"
-	"net/http"
-	"path"
 	"testing"
 )
 
@@ -44,7 +37,7 @@ func TestPathWithoutTopDir(t *testing.T) {
 //go:embed testdata/test.zip
 var testZIP []byte
 
-func ExampleArchiveFS_Stream() {
+/*func ExampleArchiveFS_Stream() {
 	fsys := ArchiveFS{
 		Stream: io.NewSectionReader(bytes.NewReader(testZIP), 0, int64(len(testZIP))),
 		Format: Zip{},
@@ -69,4 +62,4 @@ func ExampleArchiveFS_Stream() {
 	// Output:
 	// go.mod
 	// true
-}
+}*/
